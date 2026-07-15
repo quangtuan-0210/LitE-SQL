@@ -1,0 +1,22 @@
+# Large dataset directories (databases, checkpoints, and json metadata)
+datasets/
+
+# Python compiled bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Local databases and vector caches (if any)
+.chroma/
+chroma_db/
+
+# Editor / IDE configuration files
+.vscode/
+.idea/
+
+# OS temporary files
+.DS_Store
+Thumbs.db
+desktop.ini
