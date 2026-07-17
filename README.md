@@ -283,3 +283,40 @@ python generate.py \
 ## :page_facing_up: License
 
 This project is licensed under the [MIT](LICENSE) © Shengmin Piao & Jieun Lee
+
+---
+
+## 🇻🇳 Hướng Dẫn Chạy Đánh Giá (Vietnamese Running Guide)
+
+LitE-SQL hỗ trợ đánh giá hiệu năng Text-to-SQL trên ba bộ dữ liệu benchmark phổ biến: **Spider**, **BIRD**, và **FloodSQL-Bench**. Dưới đây là hướng dẫn chi tiết cách chạy từng phần bằng tiếng Việt.
+
+### 1. Đánh Giá Trên Bộ Dữ Liệu Spider
+Để chạy đánh giá baseline trên toàn bộ tập dữ liệu Spider dev set:
+1. Đảm bảo bạn đã tải và giải nén các cơ sở dữ liệu (databases) SQLite của Spider vào thư mục tương ứng.
+2. Chạy lệnh:
+   ```bash
+   python run_spider_evaluation.py
+   ```
+*Kết quả dự đoán sẽ được lưu tại `results/Spider_Qwen3.6-27B-GGUF_results.json`.*
+
+### 2. Đánh Giá Trên Bộ Dữ Liệu BIRD
+Để chạy đánh giá baseline trên tập dữ liệu BIRD:
+1. Thiết lập thư mục databases BIRD và tệp dev.json.
+2. Chạy lệnh:
+   ```bash
+   python run_bird_evaluation.py
+   ```
+*Kết quả dự đoán sẽ được lưu tại `results/BIRD_Qwen3.6-27B-GGUF_results.json`.*
+
+### 3. Đánh Giá Trên Bộ Dữ Liệu FloodSQL-Bench
+Để chạy đánh giá trên bộ dữ liệu FloodSQL-Bench sử dụng framework LitE-SQL:
+1. Đảm bảo đường dẫn dữ liệu FloodSQL-Bench trỏ tới thư mục dữ liệu tương ứng (mặc định: `D:/Projects/FloodSQL-Bench-main/data`).
+2. Chạy lệnh:
+   ```bash
+   python run_flood_evaluation.py
+   ```
+*Kết quả dự đoán sẽ được lưu dưới dạng JSON tại `results/FloodSQL_LitE-SQL_results.json`.*
+
+---
+*Lưu ý: Tất cả các tập lệnh trên đều sử dụng mô hình `Qwen3.6-27B-GGUF` thông qua API cục bộ, có hỗ trợ cơ chế tự sửa lỗi (execution-guided self-correction) qua phản hồi lỗi của hệ quản trị cơ sở dữ liệu.*
+
