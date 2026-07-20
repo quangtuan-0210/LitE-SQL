@@ -45,7 +45,7 @@ Trong thực tế thực nghiệm, kết quả chạy cục bộ của chúng t�
    * Khung **LitE-SQL** là một pipeline gọn nhẹ, thực hiện trích xuất cột liên quan (Schema Linking) rồi gửi thẳng tới LLM sinh SQL và tự sửa lỗi cú pháp cơ bản trong tối đa 2 lượt chạy thử.
    * Ngược lại, các phương pháp đạt điểm SOTA trong báo cáo gốc (như **DIN-SQL**, **MAC-SQL**, **CHESS**) sử dụng luồng xử lý đa tác nhân (Multi-Agent) hoặc phân rã bài toán rất phức tạp: chia việc viết SQL thành 4 bước độc lập (Schema Linking ➔ Phân loại độ khó câu hỏi ➔ Sinh SQL nháp theo nhóm độ khó ➔ Tự sửa lỗi logic bằng cách đối chiếu kết quả đầu ra).
 3. **Huấn luyện tinh chỉnh chuyên biệt (Supervised Fine-Tuning - SFT):**
-   * Nhiều mô hình đạt điểm số cao trên bảng xếp hạng được tinh chỉnh sâu (Fine-tuned) trực tiếp trên tập huấn luyện gốc của Spider (7.000+ mẫu) và BIRD (9.400+ mẫu). Trong khi đó, hệ thống thực nghiệm của chúng tôi chạy hoàn toàn dưới dạng **Zero-Shot** (không sử dụng dữ liệu huấn luyện mẫu để hướng dẫn mô hình), phản ánh năng lực tổng quát hóa thực tế của mô hình gốc.
+   * Nhiều mô hình đạt điểm số cao trên bảng xếp hạng được tinh chỉnh sâu (Fine-tuned) trực tiếp trên tập huấn luyện gốc của Spider (7.000+ mẫu) và BIRD (9.400+ mẫu). Trong khi đó, hệ thống thực nghiệm của này chạy hoàn toàn dưới dạng **Zero-Shot** (không sử dụng dữ liệu huấn luyện mẫu để hướng dẫn mô hình), phản ánh năng lực tổng quát hóa thực tế của mô hình gốc.
 
 ---
 
@@ -71,14 +71,24 @@ Quá trình đánh giá chạy hoàn chỉnh trên toàn bộ **1,534 câu hỏi
 | **Độ chính xác thực thi (EX)** | **51.96%** (797 / 1,534 đúng) | **72.10%** (GPT-4 SOTA / Leaderboard) |
 | **Thời gian chạy trung bình** | **~3.9 giây / câu** | Không công bố |
 
-*\*Lưu ý: BIRD có độ khó vượt trội so với Spider. Con số 72.10% là kết quả công bố cao nhất (SOTA) trên bảng xếp hạng (Leaderboard) của GPT-4 kết hợp với các kỹ thuật prompt/agent tiên tiến (như Mac-SQL, Din-SQL) hoặc các mô hình tinh chỉnh sâu.*
 
-### 3.3. File Kết Quả Chi Tiết (Detailed Results Files)
+### 3.3. Kết quả trên FloodSQL-Bench (443 câu hỏi)
+
+Quá trình đánh giá chạy hoàn chỉnh trên toàn bộ **443 câu hỏi** thuộc benchmark FloodSQL-Bench sử dụng framework LitE-SQL với môi trường DuckDB tích hợp Spatial Extension.
+
+| Chỉ số đánh giá | Kết quả thực tế (Khung LitE-SQL + Qwen-27B) | Kết quả công bố cao nhất (Hoặc SOTA / GPT-4o)* |
+| :--- | :---: | :---: |
+| **Số mẫu thử nghiệm** | **443** | 443 |
+| **Độ chính xác thực thi (EX)** | **40.86%** (181 / 443 đúng) | ~55% (GPT-4 SOTA) |
+| **Thời gian chạy trung bình** | **~11.6 giây / câu** (do các truy vấn không gian phức tạp) | Không công bố |
+
+### 3.4. File Kết Quả Chi Tiết (Detailed Results Files)
 
 Toàn bộ kết quả dự đoán chi tiết cho từng câu hỏi được lưu trữ tại các tệp:
 
-* **Spider 1.0:** [evaluation_results_spider.json]
-* **BIRD Full Validation:** [evaluation_results_bird.json]
+* **Spider 1.0:** [Spider_Qwen3.6-27B-GGUF_results.json](file:///d:/Projects/LitE-SQL/results/Spider_Qwen3.6-27B-GGUF_results.json)
+* **BIRD Full Validation:** [BIRD_Qwen3.6-27B-GGUF_results.json](file:///d:/Projects/LitE-SQL/results/BIRD_Qwen3.6-27B-GGUF_results.json)
+* **FloodSQL-Bench:** [FloodSQL_LitE-SQL_results.json](file:///d:/Projects/LitE-SQL/results/FloodSQL_LitE-SQL_results.json)
 
 Mỗi phần tử trong file JSON của kết quả chứa các thông tin sau:
 
@@ -90,7 +100,7 @@ Mỗi phần tử trong file JSON của kết quả chứa các thông tin sau:
 * `final_pred_sql`: Câu lệnh SQL dự đoán cuối cùng sau quá trình chạy thử và tự sửa lỗi (Self-Correction).
 * `is_corrected`: Đánh giá xem câu hỏi có phải trải qua bước tự sửa lỗi không (`true`/`false`).
 * `is_correct`: Kết quả đánh giá thực thi (`true` nếu khớp kết quả thực thi của Gold SQL, `false` nếu sai).
-* `error_msg`: Lỗi SQLite gặp phải trong quá trình thực thi (nếu có).
+* `error_msg`: Lỗi gặp phải trong quá trình thực thi (nếu có).
 
 ---
 
@@ -106,9 +116,15 @@ Mỗi phần tử trong file JSON của kết quả chứa các thông tin sau:
 * Đạt mức **51.96%** (797 / 1,534 đúng) trên tập dữ liệu BIRD validation đầy đủ là kết quả xuất sắc đối với mô hình Qwen-27B chạy zero-shot. Mức điểm này tiệm cận hiệu năng của các mô hình hàng đầu nhờ sự đóng góp mạnh mẽ của ChromaDB Schema Linking giúp rút gọn tối đa nhiễu trong prompt.
 * Các lỗi chính gây mất điểm bao gồm viết sai tên cột viết tắt (như `Consumption` vs `Amount`) hoặc bỏ sót các bảng nối bắc cầu (Bridge tables) phức tạp.
 
-### 4.3. Hiệu quả của Schema Linking & Self-Correction
+### 4.3. Đánh giá độ chính xác trên FloodSQL-Bench (EX = 40.86%)
 
-*   **Schema Linking (Top-15 columns):** ChromaDB + Jina Embeddings giúp rút gọn schema từ hàng trăm cột xuống còn 15 cột liên quan nhất, giúp prompt ngắn hơn 80%, tiết kiệm token và tăng tốc độ xử lý của LLM.
-*   **Vòng lặp tự sửa lỗi (Self-Correction):** Giúp nâng độ chính xác thêm khoảng 3-4% nhờ việc tự động bắt các lỗi cú pháp nhỏ (như thiếu dấu ngoặc hoặc sai tên bảng) và sửa đổi thành công ngay trong lượt chạy tiếp theo mà không cần can thiệp thủ công.
+* Đạt mức **40.86%** (181 / 443 đúng) trên tập dữ liệu FloodSQL-Bench đầy đủ bằng framework LitE-SQL chạy cục bộ. Kết quả này phản ánh độ khó rất cao của các truy vấn liên quan đến không gian (geospatial SQL queries).
+* **Đặc thù lỗi không gian:** Do nhiều truy vấn yêu cầu tính diện tích phủ chồng hoặc giao cắt giữa các Polygon (ví dụ: `ST_Intersection`, `ST_Area`), mô hình thỉnh thoảng bỏ sót điều kiện gộp nhóm `GROUP BY` khi sử dụng các cột hình học hoặc dùng sai hàm tổng hợp không gian của DuckDB (ví dụ: dùng `ST_Union` thay vì `ST_Union_Agg`).
+* **Lỗi timeout thực thi:** Một số câu hỏi so sánh không gian diện rộng giữa các bảng lớn (như `census_tracts` và `floodplain`) mà không lọc theo tỉnh/bang (`STATEFP`) làm tràn bộ nhớ DuckDB hoặc vượt quá thời gian tối đa 15 giây, dẫn đến việc hệ thống ngắt truy vấn tự động (INTERRUPT) và đánh dấu sai.
+
+### 4.4. Hiệu quả của Schema Linking & Self-Correction
+
+*   **Schema Linking (Per-Table Column Lookup):** Đối với các bảng rất lớn như `svi` (120+ cột), cơ chế tìm kiếm cột liên quan theo từng bảng (top-8 cột/bảng) giúp đảm bảo toàn bộ các cột chỉ số viết tắt đặc thù đều được LLM nhận biết đầy đủ, giảm hẳn lỗi Binder Error so với cơ chế tìm kiếm cột toàn cục.
+*   **Vòng lặp tự sửa lỗi (Self-Correction):** Giúp cải thiện đáng kể độ chính xác nhờ việc tự sửa chữa các Binder Error về tên bảng hoặc sửa lỗi hàm khi DuckDB báo về.
 
 ---

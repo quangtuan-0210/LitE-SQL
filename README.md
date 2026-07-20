@@ -317,6 +317,16 @@ LitE-SQL hỗ trợ đánh giá hiệu năng Text-to-SQL trên ba bộ dữ li�
    ```
 *Kết quả dự đoán sẽ được lưu dưới dạng JSON tại `results/FloodSQL_LitE-SQL_results.json`.*
 
+### 📊 Kết Quả Đánh Giá (Evaluation Results)
+Dưới đây là kết quả độ chính xác thực thi (Execution Accuracy - EX) của mô hình `Qwen3.6-27B-GGUF` chạy trên framework LitE-SQL:
+
+| Bộ dữ liệu (Benchmark) | Số lượng câu hỏi (Queries) | Độ chính xác thực thi (EX Accuracy) | Ghi chú |
+| :--- | :---: | :---: | :--- |
+| **Spider** (Dev set) | 1034 | **79.11%** | Chạy baseline của LitE-SQL |
+| **BIRD** (Dev set) | 1534 | **51.96%** | Chạy baseline của LitE-SQL |
+| **FloodSQL-Bench** | 443 | **40.86%** | Chạy trên môi trường DuckDB Spatial |
+
 ---
 *Lưu ý: Tất cả các tập lệnh trên đều sử dụng mô hình `Qwen3.6-27B-GGUF` thông qua API cục bộ, có hỗ trợ cơ chế tự sửa lỗi (execution-guided self-correction) qua phản hồi lỗi của hệ quản trị cơ sở dữ liệu.*
+
 
