@@ -1,6 +1,6 @@
 # Báo Cáo Thử Nghiệm Và Đánh Giá Khung LitE-SQL
 
-Báo cáo này trình bày chi tiết về quá trình thiết lập môi trường, thiết kế thuật toán (pipeline) dự đoán, giải pháp tối ưu hóa hiệu năng, và kết quả đánh giá thực tế của khung **LitE-SQL** trên tập dữ liệu đầy đủ **Spider 1.0 Validation Set** (1,034 câu hỏi).
+Báo cáo này trình bày chi tiết về quá trình thiết lập môi trường, thiết kế thuật toán (pipeline) dự đoán, giải pháp tối ưu hóa hiệu năng, và kết quả đánh giá thực tế của khung **LitE-SQL** trên tập dữ liệu đầy đủ.
 
 ---
 
