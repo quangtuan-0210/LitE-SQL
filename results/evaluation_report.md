@@ -76,19 +76,19 @@ Quá trình đánh giá chạy hoàn chỉnh trên toàn bộ **1,534 câu hỏi
 
 Quá trình đánh giá chạy hoàn chỉnh trên toàn bộ **443 câu hỏi** thuộc benchmark FloodSQL-Bench sử dụng framework LitE-SQL với môi trường DuckDB tích hợp Spatial Extension.
 
-| Chỉ số đánh giá | Kết quả thực tế (Khung LitE-SQL + Qwen-27B) | Kết quả công bố cao nhất (Hoặc SOTA / GPT-4o)* |
-| :--- | :---: | :---: |
-| **Số mẫu thử nghiệm** | **443** | 443 |
-| **Độ chính xác thực thi (EX)** | **40.86%** (181 / 443 đúng) | ~55% (GPT-4 SOTA) |
-| **Thời gian chạy trung bình** | **~11.6 giây / câu** (do các truy vấn không gian phức tạp) | Không công bố |
+| Chỉ số đánh giá | Kết quả thực tế (Khung LitE-SQL + Qwen-27B) |
+| :--- | :---: |
+| **Số mẫu thử nghiệm** | **443** |
+| **Độ chính xác thực thi (EX)** | **40.86%** (181 / 443 đúng) |
+| **Thời gian chạy trung bình** | **~11.6 giây / câu** |
 
 ### 3.4. File Kết Quả Chi Tiết (Detailed Results Files)
 
 Toàn bộ kết quả dự đoán chi tiết cho từng câu hỏi được lưu trữ tại các tệp:
 
-* **Spider 1.0:** [Spider_Qwen3.6-27B-GGUF_results.json](file:///d:/Projects/LitE-SQL/results/Spider_Qwen3.6-27B-GGUF_results.json)
-* **BIRD Full Validation:** [BIRD_Qwen3.6-27B-GGUF_results.json](file:///d:/Projects/LitE-SQL/results/BIRD_Qwen3.6-27B-GGUF_results.json)
-* **FloodSQL-Bench:** [FloodSQL_LitE-SQL_results.json](file:///d:/Projects/LitE-SQL/results/FloodSQL_LitE-SQL_results.json)
+* **Spider 1.0:** [Spider_Qwen3.6-27B-GGUF_results.json]
+* **BIRD Full Validation:** [BIRD_Qwen3.6-27B-GGUF_results.json]
+* **FloodSQL-Bench:** [FloodSQL_LitE-SQL_results.json]
 
 Mỗi phần tử trong file JSON của kết quả chứa các thông tin sau:
 
