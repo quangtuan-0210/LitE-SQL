@@ -36,16 +36,19 @@ graph TD
 
 ### 2.2. Giải Thích Sự Khác Biệt Giữa Thực Nghiệm Cục Bộ Và Báo Cáo Công Bố
 
-Trong thực tế thực nghiệm, kết quả chạy cục bộ của chúng tôi trên Spider (79.11%) và BIRD (51.96%) có sự chênh lệch so với các con số cao nhất được công bố trong các báo cáo khoa học (88.45% trên Spider và 72.10% trên BIRD). Các nguyên nhân chính dẫn đến sự khác biệt này bao gồm:
+Trong thực tế thực nghiệm, kết quả chạy cục bộ của chúng tôi trên Spider (79.11%) và BIRD (51.96%) có sự chênh lệch so với con số công bố trong báo cáo khoa học của LitE-SQL (88.45% trên Spider và 72.10% trên BIRD). Dù cả hai đều chạy trên cùng một khung pipeline của LitE-SQL, các nguyên nhân chính dẫn đến sự khác biệt này bao gồm:
 
-1. **Kiến trúc và Quy mô Mô hình (Model Capacity & Quantization):**
-   * Các nghiên cứu công bố đạt kết quả đỉnh (SOTA) thường sử dụng các mô hình thương mại siêu lớn (như GPT-4, GPT-4o, Claude 3 Opus) có số lượng tham số khổng lồ (hàng trăm tỷ đến nghìn tỷ tham số) và khả năng suy luận logic vượt trội.
-   * Thực nghiệm cục bộ của chúng tôi sử dụng mô hình mã nguồn mở tầm trung **`Qwen3.6-27B-GGUF`** đã qua lượng hóa (Quantized). Quá trình lượng hóa giúp chạy được trên phần cứng local nhưng làm suy giảm nhẹ khả năng suy luận đối với các cấu trúc SQL lồng nhau phức tạp (Nested Queries) và khả năng ánh xạ schema.
-2. **Độ phức tạp của Luồng xử lý (Pipeline Complexity):**
-   * Khung **LitE-SQL** là một pipeline gọn nhẹ, thực hiện trích xuất cột liên quan (Schema Linking) rồi gửi thẳng tới LLM sinh SQL và tự sửa lỗi cú pháp cơ bản trong tối đa 2 lượt chạy thử.
-   * Ngược lại, các phương pháp đạt điểm SOTA trong báo cáo gốc (như **DIN-SQL**, **MAC-SQL**, **CHESS**) sử dụng luồng xử lý đa tác nhân (Multi-Agent) hoặc phân rã bài toán rất phức tạp: chia việc viết SQL thành 4 bước độc lập (Schema Linking ➔ Phân loại độ khó câu hỏi ➔ Sinh SQL nháp theo nhóm độ khó ➔ Tự sửa lỗi logic bằng cách đối chiếu kết quả đầu ra).
-3. **Huấn luyện tinh chỉnh chuyên biệt (Supervised Fine-Tuning - SFT):**
-   * Nhiều mô hình đạt điểm số cao trên bảng xếp hạng được tinh chỉnh sâu (Fine-tuned) trực tiếp trên tập huấn luyện gốc của Spider (7.000+ mẫu) và BIRD (9.400+ mẫu). Trong khi đó, hệ thống thực nghiệm của này chạy hoàn toàn dưới dạng **Zero-Shot** (không sử dụng dữ liệu huấn luyện mẫu để hướng dẫn mô hình), phản ánh năng lực tổng quát hóa thực tế của mô hình gốc.
+1. **Huấn luyện tinh chỉnh chuyên biệt (SFT + RFT) vs Chạy Zero-Shot:**
+   * **Báo cáo của tác giả (88.45% / 72.10%):** Tác giả sử dụng mô hình nền `Qwen2.5-Coder-7B-Instruct` đã qua **huấn luyện tinh chỉnh 2 giai đoạn** gồm Supervised Fine-Tuning (SFT) trên tập dữ liệu mẫu cực lớn (hơn 7,000 câu Spider và 9,400 câu BIRD) và Reinforcement Fine-tuning (RFT) dựa trên phản hồi thực thi của cơ sở dữ liệu. Việc này giúp mô hình 7B ghi nhớ sâu sắc các mẫu câu hỏi và cấu trúc bảng của tập dev.
+   * **Thực nghiệm cục bộ của chúng ta:** Chạy mô hình nền **`Qwen3.6-27B-GGUF`** dưới dạng **Zero-Shot** (không sử dụng dữ liệu huấn luyện mẫu để hướng dẫn mô hình). Dù mô hình 27B lớn hơn, việc chưa được tinh chỉnh chuyên sâu trên tập dữ liệu đích vẫn khiến nó thỉnh thoảng đoán sai cấu trúc join hoặc viết sai tên các bảng trung gian phức tạp.
+
+2. **Tinh chỉnh mô hình Embedding cho bộ thu hồi Schema (Schema Retriever):**
+   * **Báo cáo của tác giả:** Sử dụng mô hình embedding (`multilingual-e5-large`) đã được **huấn luyện tương phản có giám sát (Supervised Contrastive Fine-tuning)** với các mẫu "hard-negative" để tối ưu hóa khả năng liên kết schema. Bộ lọc này lọc cột nhiễu cực tốt và giữ lại chính xác các cột cần truy vấn.
+   * **Thực nghiệm cục bộ của chúng ta:** Sử dụng API **`jina-embeddings-v3` phiên bản gốc (chưa qua tinh chỉnh)**. Sự chênh lệch này khiến danh sách schema đưa vào Prompt thỉnh thoảng bị thiếu cột khóa nối hoặc lẫn cột không liên quan, làm LLM sinh ra SQL sai logic.
+
+3. **Ảnh hưởng của quá trình Lượng hóa (Model Quantization):**
+   * **Báo cáo của tác giả:** Chạy mô hình ở độ chính xác đầy đủ (FP16 hoặc BF16) trên máy chủ GPU cao cấp.
+   * **Thực nghiệm cục bộ của chúng ta:** Sử dụng mô hình dạng **GGUF đã lượng hóa (Quantized)** thông qua sglang để phù hợp với tài nguyên API. Quá trình lượng hóa làm mất mát một phần trọng số biểu diễn ngôn ngữ, làm giảm nhẹ khả năng suy luận cú pháp logic (như các truy vấn lồng nhau phức tạp).
 
 ---
 
